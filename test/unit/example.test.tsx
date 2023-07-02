@@ -1,15 +1,37 @@
-import React from 'react';
+import React from 'react'
+import {expect, jest, test} from '@jest/globals'
 
-import { render } from '@testing-library/react';
+import {render, screen} from '@testing-library/react'
+
+import {BrowserRouter} from 'react-router-dom'
+import {Provider} from 'react-redux'
+
+import {Application} from '../../src/client/Application'
+import {ExampleApi, CartApi} from '../../src/client/api'
+import {initStore} from '../../src/client/store'
+
+const basename = '/hw/store'
+
+const api = new ExampleApi(basename)
+const cart = new CartApi()
+const store = initStore(api, cart)
 
 describe('Simple Test Case', () => {
-    it('Should return 4', () => {
-        const app = <div>example</div>;
+	test('Should return 4', () => {
+		const app = (
+			<BrowserRouter basename={basename}>
+				<Provider store={store}>
+					<Application />
+				</Provider>
+			</BrowserRouter>
+		)
 
-        const { container } = render(app);
+		const {container} = render(app)
 
-        console.log(container.outerHTML);
+		// screen.logTestingPlaygroundURL()
 
-        expect(container.textContent).toBe('example');
-    });
-});
+		expect(document.querySelector('.Application-Brand').textContent).toBe(
+			'Example store'
+		)
+	})
+})
